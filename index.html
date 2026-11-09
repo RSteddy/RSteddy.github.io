@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Jujutsu Battle - Prototype</title>
+  <style>
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      background: #0d0f12; 
+      color: #e0e0e0; 
+      text-align: center; 
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 { color: #a855f7; text-transform: uppercase; letter-spacing: 2px; }
+
+    .battle-arena { 
+      display: flex; 
+      justify-content: center; 
+      gap: 30px; 
+      margin-top: 20px; 
+    }
+
+    .card { 
+      background: #181b20; 
+      padding: 20px; 
+      border-radius: 12px; 
+      width: 250px; 
+      border: 1px solid #2d3748;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    .gauge-bg { background: #2a2e37; height: 16px; border-radius: 8px; overflow: hidden; margin: 8px 0; }
+    
+    .bar-hp { background: #ef4444; height: 100%; width: 100%; transition: width 0.3s; }
+    .bar-energy { background: #3b82f6; height: 100%; width: 100%; transition: width 0.3s; }
+
+    .actions { margin-top: 25px; }
+
+    button {
+      background: #8b5cf6;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      margin: 5px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover { background: #7c3aed; }
+    button:disabled { background: #4b5563; cursor: not-allowed; }
+
+    #logs { 
+      background: #111318; 
+      border: 1px solid #2d3748;
+      margin: 25px auto; 
+      padding: 15px; 
+      width: 550px; 
+      max-width: 90%;
+      height: 120px; 
+      overflow-y: auto; 
+      text-align: left; 
+      border-radius: 8px;
+      font-family: monospace;
+    }
+    #logs p { margin: 4px 0; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+
+  <h1>Jujutsu Battle</h1>
+
+  <div class="battle-arena">
+    <!-- Exorciste (Joueur) -->
+    <div class="card">
+      <h2>Yuji Itadori</h2>
+      <p style="margin: 2px; color: #aaa;">Exorciste</p>
+      
+      <!-- Barre PV -->
+      <div class="gauge-bg"><div id="player-hp-bar" class="bar-hp"></div></div>
+      <p>PV: <span id="player-hp">100</span>/100</p>
+      
+      <!-- Barre Énergie Occulte -->
+      <div class="gauge-bg"><div id="player-energy-bar" class="bar-energy"></div></div>
+      <p>Énergie: <span id="player-energy">50</span>/50</p>
+    </div>
+
+    <!-- Fléau (Adversaire) -->
+    <div class="card">
+      <h2>Mahito</h2>
+      <p style="margin: 2px; color: #aaa;">Fléau Classe S</p>
+      
+      <div class="gauge-bg"><div id="enemy-hp-bar" class="bar-hp"></div></div>
+      <p>PV: <span id="enemy-hp">120</span>/120</p>
+    </div>
+  </div>
+
+  <!-- Zone d'actions -->
+  <div class="actions">
+    <button id="btn-attack">Coup Physique</button>
+    <button id="btn-spell">Rayon Noir (Black Flash)</button>
+  </div>
+
+  <!-- Journal de combat -->
+  <div id="logs"></div>
+
+  <script>
+    // Stats Joueur
+    let playerHp = 100;
+    const playerMaxHp = 100;
+    let playerEnergy = 50;
+    const playerMaxEnergy = 50;
+
+    // Stats Ennemi
+    let enemyHp = 120;
+    const enemyMaxHp = 120;
+
+    // Sélection des éléments HTML
+    const playerHpEl = document.getElementById('player-hp');
+    const playerHpBar = document.getElementById('player-hp-bar');
+    const playerEnergyEl = document.getElementById('player-energy');
+    const playerEnergyBar = document.getElementById('player-energy-bar');
+
+    const enemyHpEl = document.getElementById('enemy-hp');
+    const enemyHpBar = document.getElementById('enemy-hp-bar');
+
+    const btnAttack = document.getElementById('btn-attack');
+    const btnSpell = document.getElementById('btn-spell');
+    const logsEl = document.getElementById('logs');
+
+    function addLog(msg) {
+      logsEl.innerHTML += `<p>${msg}</p>`;
+      logsEl.scrollTop = logsEl.scrollHeight;
+    }
+
+    // Attaque physique simple (Gratuite)
+    btnAttack.addEventListener('click', () => {
+      if (enemyHp <= 0 || playerHp <= 0) return;
+
+      let damage = Math.floor(Math.random() * 6) + 10; // 10 à 15 dégâts
+      enemyHp = Math.max(0, enemyHp - damage);
+
+      enemyHpEl.textContent = enemyHp;
+      enemyHpBar.style.width = (enemyHp / enemyMaxHp * 100) + '%';
+      addLog(`👊 Yuji assène un coup et inflige <span style="color:#ef4444">${damage}</span> dégâts !`);
+
+      checkVictory();
+    });
+
+    // Attaque spéciale : Black Flash (Consomme de l'énergie)
+    btnSpell.addEventListener('click', () => {
+      if (enemyHp <= 0 || playerHp <= 0) return;
+
+      const energyCost = 20;
+      if (playerEnergy < energyCost) {
+        addLog("⚠️ Pas assez d'Énergie Occulte !");
+        return;
+      }
+
+      // Consommation d'énergie
+      playerEnergy -= energyCost;
+      playerEnergyEl.textContent = playerEnergy;
+      playerEnergyBar.style.width = (playerEnergy / playerMaxEnergy * 100) + '%';
+
+      let damage = Math.floor(Math.random() * 11) + 25; // 25 à 35 dégâts
+      enemyHp = Math.max(0, enemyHp - damage);
+
+      enemyHpEl.textContent = enemyHp;
+      enemyHpBar.style.width = (enemyHp / enemyMaxHp * 100) + '%';
+      addLog(`⚡ <strong style="color:#a855f7">BLACK FLASH !</strong> Un impact critique de <span style="color:#ef4444">${damage}</span> dégâts !`);
+
+      checkVictory();
+    });
+
+    function checkVictory() {
+      if (enemyHp === 0) {
+        addLog("🏆 <strong style="color:#22c55e">Le fléau a été exorcisé ! Victoire !</strong>");
+        btnAttack.disabled = true;
+        btnSpell.disabled = true;
+      }
+    }
+  </script>
+</body>
+</html>
