@@ -1,0 +1,20 @@
+.col-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* Empêche l'image d'être coupée en gardant ses proportions */
+      background: #0d0f14;  /* Fond sombre si l'image est plus étroite */
+    }
+
+    .main-card-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #0d0f14;
+    }
+
+    .battle-avatar img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: contain; 
+      background: #0d0f14;
+    }
