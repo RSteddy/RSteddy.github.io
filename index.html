@@ -79,14 +79,29 @@
       margin-top: 5px;
     }
 
+    .badges-top {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
     .badge-rank {
       background: #3b82f6;
       color: white;
-      padding: 4px 14px;
+      padding: 4px 12px;
       border-radius: 12px;
       font-size: 0.75em;
       font-weight: bold;
-      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .badge-lvl {
+      background: #eab308;
+      color: #000;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.75em;
+      font-weight: 900;
       text-transform: uppercase;
     }
 
@@ -115,7 +130,7 @@
 
     .main-card-avatar {
       width: 100%;
-      height: 220px;
+      height: 210px;
       border-radius: 12px;
       overflow: hidden;
       border: 2px solid #8b5cf6;
@@ -133,9 +148,32 @@
     .stats-row {
       display: flex;
       justify-content: space-around;
-      margin: 12px 0 5px 0;
+      margin: 10px 0 6px 0;
       font-weight: bold;
       font-size: 0.9em;
+    }
+
+    .xp-container {
+      margin-top: 8px;
+      text-align: left;
+      font-size: 0.72em;
+      color: #94a3b8;
+    }
+
+    .xp-bar-bg {
+      background: #1e2430;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 3px;
+      border: 1px solid #334155;
+    }
+
+    .xp-bar-fill {
+      background: linear-gradient(90deg, #eab308, #f59e0b);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s;
     }
 
     .btn-fight {
@@ -150,9 +188,23 @@
       letter-spacing: 2px;
       cursor: pointer;
       box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
-      margin-top: 15px;
+      margin-top: 10px;
     }
     .btn-fight:active { transform: scale(0.97); }
+
+    /* MENU MODE FARM & SHIBUYA */
+    .mission-card {
+      background: #141721;
+      border: 1px solid #272f3f;
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: border-color 0.2s;
+    }
+    .mission-card:hover { border-color: #8b5cf6; }
 
     /* PAGE ARÈNE COMBAT */
     .battle-box {
@@ -202,7 +254,7 @@
       background: #090a0f;
       border: 1px solid #1f2430;
       padding: 10px;
-      height: 100px;
+      height: 110px;
       overflow-y: auto;
       border-radius: 8px;
       font-family: monospace;
@@ -229,9 +281,7 @@
       cursor: pointer;
       transition: transform 0.2s, border-color 0.2s;
     }
-    .col-card:hover {
-      transform: translateY(-2px);
-    }
+    .col-card:hover { transform: translateY(-2px); }
 
     .col-card.active-char {
       border: 2px solid #22c55e;
@@ -253,13 +303,12 @@
 
     .col-avatar {
       width: 100%;
-      height: 150px;
+      height: 140px;
       border-radius: 10px;
       overflow: hidden;
       margin-bottom: 8px;
       border: 2px solid #8b5cf6;
       background: #000;
-      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 0 0 8px rgba(139, 92, 246, 0.25);
     }
 
     .col-avatar img {
@@ -269,16 +318,28 @@
       object-position: center top;
     }
 
-    .col-name { 
-      font-size: 0.85em; 
-      font-weight: bold; 
-      margin-top: 2px;
+    .col-name { font-size: 0.85em; font-weight: bold; }
+    .col-rank { font-size: 0.72em; color: #8b5cf6; font-weight: bold; }
+    .col-lvl { font-size: 0.7em; color: #eab308; margin-top: 2px; }
+
+    /* ANIMATIONS INVOCATION (CSS) */
+    @keyframes summonPulse {
+      0% { transform: scale(1); box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); }
+      50% { transform: scale(1.05); box-shadow: 0 0 35px rgba(56, 189, 248, 0.8), 0 0 60px rgba(139, 92, 246, 0.6); border-color: #8b5cf6; }
+      100% { transform: scale(1); box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); }
     }
-    
-    .col-rank { 
-      font-size: 0.7em; 
-      color: #8b5cf6; 
-      font-weight: bold; 
+
+    .summoning {
+      animation: summonPulse 0.8s ease-in-out;
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .reveal-anim {
+      animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     /* NAVIGATION EN BAS */
@@ -314,7 +375,7 @@
     <!-- Top Bar -->
     <div class="top-bar">
       <div class="user-profile">👤 Exorciste Pro</div>
-      <div style="color: #eab308; font-weight: bold;">💎 1,250</div>
+      <div style="color: #38bdf8; font-weight: bold;">💎 <span id="user-diamonds">1250</span></div>
     </div>
 
     <!-- Zone de Contenu -->
@@ -323,7 +384,10 @@
       <!-- 1. ACCUEIL -->
       <div id="page-home" class="page active">
         <div class="hero-card-container">
-          <div class="badge-rank" id="home-rank">Rang B+</div>
+          <div class="badges-top">
+            <div class="badge-rank" id="home-rank">Rang B</div>
+            <div class="badge-lvl" id="home-lvl">Nv. 1</div>
+          </div>
 
           <div class="main-card">
             <div class="main-card-header" id="home-name">Yuji Itadori</div>
@@ -332,28 +396,60 @@
             </div>
             
             <div class="stats-row">
-              <div>❤️ <span id="home-hp">120</span> PV</div>
-              <div>⚔️ <span id="home-atk">14</span> ATK</div>
+              <div>❤️ <span id="home-hp">80</span> PV</div>
+              <div>⚔️ <span id="home-atk">55</span> ATK</div>
+            </div>
+
+            <!-- Barre d'XP -->
+            <div class="xp-container">
+              <div style="display:flex; justify-content:space-between;">
+                <span>Expérience</span>
+                <span id="home-xp-text" style="color:#eab308; font-weight:bold;">0 / 800 XP</span>
+              </div>
+              <div class="xp-bar-bg">
+                <div class="xp-bar-fill" id="home-xp-bar"></div>
+              </div>
             </div>
           </div>
         </div>
 
-        <button class="btn-fight" id="btn-start-fight">⚡ COMBATTRE</button>
+        <div style="display: flex; gap: 8px; margin-top: 15px;">
+          <button class="btn-fight" id="btn-goto-farm" style="flex: 1; font-size: 0.9em; padding: 12px 0; margin-top:0;">🌾 Mode Farm PvE</button>
+          <button class="btn-fight" id="btn-goto-shibuya" style="flex: 1; font-size: 0.9em; padding: 12px 0; margin-top:0; background: linear-gradient(135deg, #7c3aed, #6d28d9); border-color: #8b5cf6;">⛩️ Mode Shibuya</button>
+        </div>
+      </div>
+
+      <!-- MENU MODE FARM (PvE Stable) -->
+      <div id="page-farm-menu" class="page">
+        <h4 style="margin: 0 0 4px 0; color:#22c55e;">Mode Farm (PvE)</h4>
+        <p style="font-size: 0.75em; color: #94a3b8; margin: 0 0 12px 0;">Fléaux stables pour s'entraîner et farmer :</p>
+        
+        <div id="farm-missions-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        <button class="action-btn" id="btn-back-home-farm" style="background:#334155; margin-top:15px;">⬅️ Retour Accueil</button>
+      </div>
+
+      <!-- MENU MODE SHIBUYA (Difficulté croissante) -->
+      <div id="page-shibuya-menu" class="page">
+        <h4 style="margin: 0 0 4px 0; color:#8b5cf6;">Incident de Shibuya</h4>
+        <p style="font-size: 0.75em; color: #94a3b8; margin: 0 0 12px 0;">Les fléaux deviennent de plus en plus forts :</p>
+        
+        <div id="shibuya-missions-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        <button class="action-btn" id="btn-back-home-shibuya" style="background:#334155; margin-top:15px;">⬅️ Retour Accueil</button>
       </div>
 
       <!-- 2. ARÈNE COMBAT -->
       <div id="page-battle" class="page">
-        <h4 style="margin: 0 0 10px 0; color:#8b5cf6; text-align:center;">Combat JJK</h4>
+        <h4 id="battle-title" style="margin: 0 0 10px 0; color:#8b5cf6; text-align:center;">Combat JJK</h4>
 
         <!-- Ennemi -->
         <div class="battle-box" style="border-color: #ef4444;">
           <div class="battle-avatar">
-            <img src="assets/mahito.png" alt="Mahito">
+            <img id="enemy-avatar" src="" alt="Fléau">
           </div>
           <div style="flex:1;">
             <div style="display:flex; justify-content:space-between; font-size:0.85em;">
-              <strong>Mahito (Fléau)</strong>
-              <span style="color:#ef4444; font-weight:bold;"><span id="enemy-hp">150</span>/150</span>
+              <strong id="enemy-name">Fléau</strong>
+              <span style="color:#ef4444; font-weight:bold;"><span id="enemy-hp">100</span>/<span id="enemy-max-hp">100</span></span>
             </div>
             <div class="gauge-bg"><div id="enemy-hp-bar" class="bar-hp"></div></div>
           </div>
@@ -367,7 +463,7 @@
           <div style="flex:1;">
             <div style="display:flex; justify-content:space-between; font-size:0.85em;">
               <strong id="battle-player-name">Yuji Itadori</strong>
-              <span style="color:#22c55e; font-weight:bold;"><span id="battle-player-hp">120</span> PV</span>
+              <span style="color:#22c55e; font-weight:bold;"><span id="battle-player-hp">80</span> PV</span>
             </div>
             <div class="gauge-bg"><div id="player-hp-bar" class="bar-hp"></div></div>
             
@@ -383,6 +479,7 @@
         <button class="action-btn" id="btn-atk-sort" style="background:#7c3aed;">⚡ Sort Spécial</button>
 
         <div id="logs"></div>
+        <button class="action-btn" id="btn-end-battle" style="background:#334155; margin-top:8px; display:none;">Quitter le combat</button>
       </div>
 
       <!-- 3. COLLECTION -->
@@ -391,6 +488,26 @@
         <p style="font-size: 0.75em; color: #94a3b8; text-align: left; margin: 0 0 10px 0;">Cliquez sur un personnage pour l'incarner.</p>
         
         <div class="collection-grid" id="collection-container"></div>
+      </div>
+
+      <!-- 4. INVOCATION -->
+      <div id="page-invocation" class="page">
+        <h4 style="margin: 0 0 4px 0; color:#38bdf8; text-align:center;">Portail d'Invocation</h4>
+        <p style="font-size: 0.75em; color: #94a3b8; text-align: center; margin: 0 0 15px 0;">Invoque pour obtenir des personnages ou des doublons !</p>
+        
+        <div id="summon-portal-card" style="background: linear-gradient(145deg, #161922, #0f1118); border: 2px solid #38bdf8; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);">
+          <div style="font-size: 2.5em; margin-bottom: 10px;">🎴</div>
+          <h3 style="margin: 0 0 5px 0; font-size: 1em;">Portail JJK - Standard</h3>
+          <p style="font-size: 0.7em; color: #94a3b8; margin-bottom: 15px;">Coût : <span style="color: #38bdf8; font-weight: bold;">150 💎</span> par invocation</p>
+          
+          <button class="action-btn" id="btn-summon" style="background: linear-gradient(135deg, #0284c7, #0369a1); font-size: 1em; padding: 12px;">✨ Invoquer (1x)</button>
+        </div>
+
+        <div id="summon-result" style="margin-top: 15px; text-align: center; display: none; background: #141721; border: 1px solid #38bdf8; border-radius: 12px; padding: 12px;">
+          <p style="font-size: 0.75em; color: #38bdf8; margin: 0 0 8px 0; font-weight: bold;">Résultat de l'invocation :</p>
+          <img id="summon-reward-img" src="" alt="Personnage invoqué" style="width: 72px; height: 72px; border-radius: 12px; border: 2px solid #eab308; object-fit: cover; object-position: center top; margin-bottom: 6px; background: #000;">
+          <div id="summon-reward-name" style="font-size: 0.9em; font-weight: bold;">-</div>
+        </div>
       </div>
 
     </div>
@@ -408,10 +525,6 @@
       <button class="nav-item" id="nav-invocation">
         <span class="icon">🎴</span>
         <span>Invocation</span>
-      </button>
-      <button class="nav-item" id="nav-ranked">
-        <span class="icon">🏆</span>
-        <span>Classé</span>
       </button>
     </div>
 
