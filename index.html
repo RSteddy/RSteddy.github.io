@@ -1,533 +1,284 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jujutsu Battles - Mobile UI</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      user-select: none;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #060709;
-      color: #ffffff;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    /* Application Mobile Container */
-    .app-container {
-      width: 100%;
-      max-width: 400px;
-      height: 85vh;
-      max-height: 780px;
-      background: #0d0f14;
-      border: 2px solid #1e2430;
-      border-radius: 24px;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 20px rgba(139, 92, 246, 0.15);
-    }
-
-    /* Top Bar */
-    .top-bar {
-      background: #11141c;
-      padding: 12px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #1f2430;
-      font-size: 0.85em;
-    }
-
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: #1a1e29;
-      padding: 4px 10px;
-      border-radius: 20px;
-      border: 1px solid #8b5cf6;
-      font-weight: bold;
-    }
-
-    /* Zone de Contenu */
-    .content-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 15px;
-      position: relative;
-    }
-
-    .page { display: none; }
-    .page.active { display: block; }
-
-    /* PAGE ACCUEIL */
-    .hero-card-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 5px;
-    }
-
-    .badges-top {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .badge-rank {
-      background: #3b82f6;
-      color: white;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 0.75em;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
-
-    .badge-lvl {
-      background: #eab308;
-      color: #000;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 0.75em;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-
-    .main-card {
-      background: linear-gradient(145deg, #161922, #0f1118);
-      border: 3px solid #8b5cf6;
-      border-radius: 18px;
-      width: 100%;
-      max-width: 270px;
-      padding: 15px;
-      box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
-      text-align: center;
-    }
-
-    .main-card-header {
-      background: #000;
-      border: 1px solid #334155;
-      padding: 6px;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 0.9em;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .main-card-avatar {
-      width: 100%;
-      height: 210px;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 2px solid #8b5cf6;
-      background: #000;
-      box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
-    }
-
-    .main-card-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center top;
-    }
-
-    .stats-row {
-      display: flex;
-      justify-content: space-around;
-      margin: 10px 0 6px 0;
-      font-weight: bold;
-      font-size: 0.9em;
-    }
-
-    .xp-container {
-      margin-top: 8px;
-      text-align: left;
-      font-size: 0.72em;
-      color: #94a3b8;
-    }
-
-    .xp-bar-bg {
-      background: #1e2430;
-      height: 8px;
-      border-radius: 4px;
-      overflow: hidden;
-      margin-top: 3px;
-      border: 1px solid #334155;
-    }
-
-    .xp-bar-fill {
-      background: linear-gradient(90deg, #eab308, #f59e0b);
-      height: 100%;
-      width: 0%;
-      transition: width 0.3s;
-    }
-
-    .btn-fight {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      color: white;
-      border: 2px solid #f87171;
-      padding: 14px 0;
-      width: 100%;
-      border-radius: 14px;
-      font-size: 1.1em;
-      font-weight: 900;
-      letter-spacing: 2px;
-      cursor: pointer;
-      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
-      margin-top: 10px;
-    }
-    .btn-fight:active { transform: scale(0.97); }
-
-    /* MENU MODE FARM & SHIBUYA */
-    .mission-card {
-      background: #141721;
-      border: 1px solid #272f3f;
-      border-radius: 10px;
-      padding: 12px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: border-color 0.2s;
-    }
-    .mission-card:hover { border-color: #8b5cf6; }
-
-    /* PAGE ARÈNE COMBAT */
-    .battle-box {
-      background: #141721;
-      border: 1px solid #272f3f;
-      border-radius: 12px;
-      padding: 10px;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .battle-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 2px solid #8b5cf6;
-      flex-shrink: 0;
-      background: #000;
-    }
-    .battle-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center top;
-    }
-
-    .gauge-bg { background: #262d3d; height: 10px; border-radius: 5px; overflow: hidden; margin: 4px 0; }
-    .bar-hp { background: #ef4444; height: 100%; width: 100%; transition: width 0.3s; }
-    .bar-energy { background: #3b82f6; height: 100%; width: 100%; transition: width 0.3s; }
-
-    .action-btn {
-      background: #8b5cf6;
-      color: white;
-      border: none;
-      padding: 12px;
-      width: 100%;
-      border-radius: 8px;
-      font-weight: bold;
-      margin-top: 8px;
-      cursor: pointer;
-    }
-
-    #logs {
-      background: #090a0f;
-      border: 1px solid #1f2430;
-      padding: 10px;
-      height: 110px;
-      overflow-y: auto;
-      border-radius: 8px;
-      font-family: monospace;
-      font-size: 0.78em;
-      text-align: left;
-      margin-top: 10px;
-    }
-
-    /* PAGE COLLECTION */
-    .collection-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 10px;
-    }
-
-    .col-card {
-      background: #141721;
-      border: 1.5px solid #272f3f;
-      border-radius: 14px;
-      padding: 8px;
-      position: relative;
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s;
-    }
-    .col-card:hover { transform: translateY(-2px); }
-
-    .col-card.active-char {
-      border: 2px solid #22c55e;
-      box-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
-    }
-
-    .badge-equipped {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      background: #22c55e;
-      color: #000;
-      font-size: 0.6em;
-      font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 4px;
-      z-index: 2;
-    }
-
-    .col-avatar {
-      width: 100%;
-      height: 140px;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-bottom: 8px;
-      border: 2px solid #8b5cf6;
-      background: #000;
-    }
-
-    .col-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center top;
-    }
-
-    .col-name { font-size: 0.85em; font-weight: bold; }
-    .col-rank { font-size: 0.72em; color: #8b5cf6; font-weight: bold; }
-    .col-lvl { font-size: 0.7em; color: #eab308; margin-top: 2px; }
-
-    /* ANIMATIONS INVOCATION (CSS) */
-    @keyframes summonPulse {
-      0% { transform: scale(1); box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); }
-      50% { transform: scale(1.05); box-shadow: 0 0 35px rgba(56, 189, 248, 0.8), 0 0 60px rgba(139, 92, 246, 0.6); border-color: #8b5cf6; }
-      100% { transform: scale(1); box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); }
-    }
-
-    .summoning {
-      animation: summonPulse 0.8s ease-in-out;
-    }
-
-    @keyframes popIn {
-      0% { opacity: 0; transform: scale(0.8); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    .reveal-anim {
-      animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    /* NAVIGATION EN BAS */
-    .bottom-nav {
-      height: 60px;
-      background: #090a0f;
-      border-top: 1px solid #1e2430;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #64748b;
-      font-size: 0.68em;
-      cursor: pointer;
-      background: none;
-      border: none;
-      gap: 3px;
-    }
-
-    .nav-item .icon { font-size: 1.3em; }
-    .nav-item.active { color: #8b5cf6; font-weight: bold; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JJK Turn-Based RPG</title>
+  <link rel="stylesheet" href="css.css" />
 </head>
 <body>
-
   <div class="app-container">
-    
-    <!-- Top Bar -->
-    <div class="top-bar">
-      <div class="user-profile">👤 Exorciste Pro</div>
-      <div style="color: #38bdf8; font-weight: bold;">💎 <span id="user-diamonds">1250</span></div>
+    <!-- ÉCRAN DE CHOIX / MODIFICATION DU PSEUDO -->
+    <div id="setup-overlay" class="setup-overlay active">
+      <div class="setup-card">
+        <div class="setup-badge">JUJUTSU KAISEN • RPG</div>
+        <h2 class="setup-title">Choisis ton pseudo</h2>
+        <p class="setup-desc">Entre le nom de ton exorciste pour démarrer l'aventure.</p>
+        <input
+          id="pseudo-input"
+          class="pseudo-input"
+          type="text"
+          maxlength="18"
+          placeholder="Ex : Yuji, Gojo, Sukuna..."
+        />
+        <button id="btn-confirm-pseudo" type="button" class="action-btn setup-btn">
+          Valider le pseudo
+        </button>
+        <button
+          id="btn-cancel-pseudo"
+          type="button"
+          class="action-btn btn-secondary"
+          style="display:none; margin-top:8px;"
+        >
+          Annuler
+        </button>
+      </div>
     </div>
 
-    <!-- Zone de Contenu -->
-    <div class="content-area">
+    <!-- FENÊTRE MODALE D'INFO / ACTION -->
+    <div id="info-modal-overlay" class="battle-modal-overlay">
+      <div class="battle-modal-card">
+        <div id="info-modal-badge" class="battle-modal-status">INFO</div>
+        <h3 id="info-modal-title" class="battle-modal-title">Information</h3>
+        <p id="info-modal-desc" class="info-modal-desc"></p>
+        <div class="battle-modal-actions">
+          <button id="btn-info-primary" type="button" class="action-btn btn-modal-continue">
+            OK
+          </button>
+          <button id="btn-info-secondary" type="button" class="action-btn btn-secondary btn-modal-home">
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
 
-      <!-- 1. ACCUEIL -->
-      <div id="page-home" class="page active">
-        <div class="hero-card-container">
+    <!-- FENÊTRE DE FIN DE COMBAT -->
+    <div id="battle-end-modal" class="battle-modal-overlay">
+      <div class="battle-modal-card">
+        <div id="battle-modal-status" class="battle-modal-status">VICTOIRE</div>
+        <h3 id="battle-modal-title" class="battle-modal-title">Combat remporté !</h3>
+        <p id="battle-modal-rewards" class="battle-modal-rewards">+0 XP • +0 💎</p>
+        <p id="battle-modal-levelup" class="battle-modal-levelup"></p>
+        <div class="battle-modal-actions">
+          <button id="btn-modal-replay" type="button" class="action-btn btn-modal-replay">
+            🔄 Combattre à nouveau
+          </button>
+          <button id="btn-modal-continue" type="button" class="action-btn btn-modal-continue">
+            ➡️ Continuer
+          </button>
+          <button id="btn-modal-home" type="button" class="action-btn btn-secondary btn-modal-home">
+            🏠 Menu principal
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP BAR -->
+    <header class="top-bar">
+      <div class="user-profile-group">
+        <div class="user-profile">
+          <span>🥷</span>
+          <span id="user-pseudo">Exorciste</span>
+        </div>
+        <button id="btn-edit-pseudo" type="button" class="icon-btn" title="Changer de pseudo" aria-label="Changer de pseudo">
+          ✏️
+        </button>
+        <button id="btn-reset-save" type="button" class="icon-btn icon-btn-danger" title="Réinitialiser la sauvegarde" aria-label="Réinitialiser la sauvegarde">
+          🗑️
+        </button>
+      </div>
+      <div class="diamond-counter">
+        💎 <span id="user-diamonds">480</span>
+      </div>
+    </header>
+
+    <!-- CONTENU -->
+    <main class="content-area">
+      <!-- PAGE ACCUEIL -->
+      <section id="page-home" class="page active">
+        <div id="welcome-banner" class="welcome-banner" style="display:none;">
+          <div id="welcome-text" class="welcome-text"></div>
+          <button id="btn-close-welcome" type="button" class="welcome-close" aria-label="Fermer">✕</button>
+        </div>
+
+        <div id="no-char-home" class="no-char-box">
+          <div class="no-char-icon">🔮</div>
+          <h3 class="no-char-title">Aucun exorciste incarné</h3>
+          <p class="no-char-desc">
+            Rends-toi dans l'onglet <strong>Invocation</strong> pour invoquer ton premier personnage avec tes diamants bleus.
+          </p>
+          <button id="btn-go-summon-empty" type="button" class="action-btn btn-summon">
+            ✨ Aller à l'Invocation
+          </button>
+        </div>
+
+        <div id="hero-card-container" class="hero-card-container" style="display:none;">
           <div class="badges-top">
-            <div class="badge-rank" id="home-rank">Rang B</div>
-            <div class="badge-lvl" id="home-lvl">Nv. 1</div>
+            <span id="home-rank" class="badge-rank">Rang C</span>
+            <span id="home-lvl" class="badge-lvl">Nv. 1</span>
           </div>
 
           <div class="main-card">
-            <div class="main-card-header" id="home-name">Yuji Itadori</div>
+            <div id="home-name" class="main-card-header">Personnage</div>
             <div class="main-card-avatar">
-              <img id="home-img" src="" alt="Avatar">
-            </div>
-            
-            <div class="stats-row">
-              <div>❤️ <span id="home-hp">80</span> PV</div>
-              <div>⚔️ <span id="home-atk">55</span> ATK</div>
+              <img id="home-img" alt="Portrait" />
+              <div id="home-img-error" class="img-missing-note">
+                <div>Image introuvable</div>
+                <div id="home-img-path" class="img-missing-sub"></div>
+              </div>
             </div>
 
-            <!-- Barre d'XP -->
+            <div class="stats-row">
+              <div>❤️ PV : <span id="home-hp">70</span></div>
+              <div>⚔️ ATK : <span id="home-atk">40</span></div>
+            </div>
+
             <div class="xp-container">
-              <div style="display:flex; justify-content:space-between;">
+              <div class="xp-label-row">
                 <span>Expérience</span>
-                <span id="home-xp-text" style="color:#eab308; font-weight:bold;">0 / 800 XP</span>
+                <span id="home-xp-text" class="xp-value">0 / 500 XP</span>
               </div>
               <div class="xp-bar-bg">
-                <div class="xp-bar-fill" id="home-xp-bar"></div>
+                <div id="home-xp-bar" class="xp-bar-fill"></div>
               </div>
             </div>
           </div>
         </div>
 
-        <div style="display: flex; gap: 8px; margin-top: 15px;">
-          <button class="btn-fight" id="btn-goto-farm" style="flex: 1; font-size: 0.9em; padding: 12px 0; margin-top:0;">🌾 Mode Farm PvE</button>
-          <button class="btn-fight" id="btn-goto-shibuya" style="flex: 1; font-size: 0.9em; padding: 12px 0; margin-top:0; background: linear-gradient(135deg, #7c3aed, #6d28d9); border-color: #8b5cf6;">⛩️ Mode Shibuya</button>
+        <div class="mode-buttons-row">
+          <button id="btn-goto-pve" type="button" class="btn-fight btn-farm">
+            🌿 Mode PvE
+          </button>
+          <button id="btn-goto-shibuya" type="button" class="btn-fight btn-shibuya">
+            🏙️ Shibuya
+          </button>
         </div>
-      </div>
+      </section>
 
-      <!-- MENU MODE FARM (PvE Stable) -->
-      <div id="page-farm-menu" class="page">
-        <h4 style="margin: 0 0 4px 0; color:#22c55e;">Mode Farm (PvE)</h4>
-        <p style="font-size: 0.75em; color: #94a3b8; margin: 0 0 12px 0;">Fléaux stables pour s'entraîner et farmer :</p>
-        
-        <div id="farm-missions-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
-        <button class="action-btn" id="btn-back-home-farm" style="background:#334155; margin-top:15px;">⬅️ Retour Accueil</button>
-      </div>
+      <!-- PAGE MENU PVE -->
+      <section id="page-pve-menu" class="page">
+        <h2 class="menu-title-farm">🌿 Mode PvE</h2>
+        <p class="menu-subtitle">Choisis un niveau disponible pour farmer de l'XP et des diamants.</p>
+        <div id="pve-missions-container" class="missions-list"></div>
+        <button id="btn-back-home-pve" type="button" class="action-btn btn-secondary">
+          ⬅️ Retour à l'accueil
+        </button>
+      </section>
 
-      <!-- MENU MODE SHIBUYA (Difficulté croissante) -->
-      <div id="page-shibuya-menu" class="page">
-        <h4 style="margin: 0 0 4px 0; color:#8b5cf6;">Incident de Shibuya</h4>
-        <p style="font-size: 0.75em; color: #94a3b8; margin: 0 0 12px 0;">Les fléaux deviennent de plus en plus forts :</p>
-        
-        <div id="shibuya-missions-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
-        <button class="action-btn" id="btn-back-home-shibuya" style="background:#334155; margin-top:15px;">⬅️ Retour Accueil</button>
-      </div>
+      <!-- PAGE MENU SHIBUYA -->
+      <section id="page-shibuya-menu" class="page">
+        <h2 class="menu-title-shibuya">🏙️ Incident de Shibuya</h2>
+        <p class="menu-subtitle">Affronte les fléaux secteur par secteur.</p>
+        <div id="shibuya-missions-container" class="missions-list"></div>
+        <button id="btn-back-home-shibuya" type="button" class="action-btn btn-secondary">
+          ⬅️ Retour à l'accueil
+        </button>
+      </section>
 
-      <!-- 2. ARÈNE COMBAT -->
-      <div id="page-battle" class="page">
-        <h4 id="battle-title" style="margin: 0 0 10px 0; color:#8b5cf6; text-align:center;">Combat JJK</h4>
+      <!-- PAGE COMBAT -->
+      <section id="page-battle" class="page">
+        <h2 id="battle-title" class="battle-title">Combat</h2>
 
-        <!-- Ennemi -->
-        <div class="battle-box" style="border-color: #ef4444;">
+        <div class="battle-box battle-box-enemy">
           <div class="battle-avatar">
-            <img id="enemy-avatar" src="" alt="Fléau">
+            <img id="enemy-avatar" alt="Ennemi" />
           </div>
-          <div style="flex:1;">
-            <div style="display:flex; justify-content:space-between; font-size:0.85em;">
-              <strong id="enemy-name">Fléau</strong>
-              <span style="color:#ef4444; font-weight:bold;"><span id="enemy-hp">100</span>/<span id="enemy-max-hp">100</span></span>
+          <div class="battle-info">
+            <div class="battle-row-top">
+              <strong id="enemy-name">Ennemi</strong>
+              <span class="enemy-hp-label">❤️ <span id="enemy-hp">100</span>/<span id="enemy-max-hp">100</span></span>
             </div>
-            <div class="gauge-bg"><div id="enemy-hp-bar" class="bar-hp"></div></div>
+            <div class="gauge-bg">
+              <div id="enemy-hp-bar" class="bar-hp"></div>
+            </div>
           </div>
         </div>
 
-        <!-- Joueur -->
         <div class="battle-box">
           <div class="battle-avatar">
-            <img id="battle-player-img" src="" alt="Joueur">
+            <img id="battle-player-img" alt="Joueur" />
           </div>
-          <div style="flex:1;">
-            <div style="display:flex; justify-content:space-between; font-size:0.85em;">
-              <strong id="battle-player-name">Yuji Itadori</strong>
-              <span style="color:#22c55e; font-weight:bold;"><span id="battle-player-hp">80</span> PV</span>
+          <div class="battle-info">
+            <div class="battle-row-top">
+              <strong id="battle-player-name">Exorciste</strong>
+              <span class="player-hp-label">❤️ <span id="battle-player-hp">70</span></span>
             </div>
-            <div class="gauge-bg"><div id="player-hp-bar" class="bar-hp"></div></div>
-            
-            <div style="display:flex; justify-content:space-between; font-size:0.7em; color:#94a3b8; margin-top:2px;">
-              <span>Énergie</span>
-              <span style="color:#3b82f6; font-weight:bold;"><span id="battle-player-energy">50</span></span>
+            <div class="gauge-bg">
+              <div id="player-hp-bar" class="bar-hp" style="background:#22c55e;"></div>
             </div>
-            <div class="gauge-bg"><div id="player-energy-bar" class="bar-energy"></div></div>
+            <div class="battle-row-sub">
+              <span>Énergie Occulte</span>
+              <span class="player-energy-label">⚡ <span id="battle-player-energy">50</span></span>
+            </div>
+            <div class="gauge-bg">
+              <div id="player-energy-bar" class="bar-energy"></div>
+            </div>
           </div>
         </div>
 
-        <button class="action-btn" id="btn-atk-physique">👊 Attaque Physique</button>
-        <button class="action-btn" id="btn-atk-sort" style="background:#7c3aed;">⚡ Sort Spécial</button>
+        <div class="phys-counter-info">
+          Attaques physiques pour l'Ultime : <strong id="phys-atk-count">0</strong> / 3
+        </div>
+
+        <button id="btn-atk-physique" type="button" class="action-btn">
+          👊 Attaque Physique
+        </button>
+        <button id="btn-atk-sort" type="button" class="action-btn btn-spell btn-spell-locked">
+          ⚡ Sort Spécial
+        </button>
+        <button id="btn-end-battle" type="button" class="action-btn btn-secondary btn-end-battle">
+          Retour
+        </button>
 
         <div id="logs"></div>
-        <button class="action-btn" id="btn-end-battle" style="background:#334155; margin-top:8px; display:none;">Quitter le combat</button>
-      </div>
+      </section>
 
-      <!-- 3. COLLECTION -->
-      <div id="page-collection" class="page">
-        <h4 style="margin: 0 0 4px 0; text-align: left;">Ma Collection</h4>
-        <p style="font-size: 0.75em; color: #94a3b8; text-align: left; margin: 0 0 10px 0;">Cliquez sur un personnage pour l'incarner.</p>
-        
-        <div class="collection-grid" id="collection-container"></div>
-      </div>
+      <!-- PAGE COLLECTION -->
+      <section id="page-collection" class="page">
+        <h2 class="section-title">📚 Collection</h2>
+        <p class="section-subtitle">Clique sur un personnage obtenu pour l'incarner.</p>
+        <div id="collection-container" class="collection-grid"></div>
+      </section>
 
-      <!-- 4. INVOCATION -->
-      <div id="page-invocation" class="page">
-        <h4 style="margin: 0 0 4px 0; color:#38bdf8; text-align:center;">Portail d'Invocation</h4>
-        <p style="font-size: 0.75em; color: #94a3b8; text-align: center; margin: 0 0 15px 0;">Invoque pour obtenir des personnages ou des doublons !</p>
-        
-        <div id="summon-portal-card" style="background: linear-gradient(145deg, #161922, #0f1118); border: 2px solid #38bdf8; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);">
-          <div style="font-size: 2.5em; margin-bottom: 10px;">🎴</div>
-          <h3 style="margin: 0 0 5px 0; font-size: 1em;">Portail JJK - Standard</h3>
-          <p style="font-size: 0.7em; color: #94a3b8; margin-bottom: 15px;">Coût : <span style="color: #38bdf8; font-weight: bold;">150 💎</span> par invocation</p>
-          
-          <button class="action-btn" id="btn-summon" style="background: linear-gradient(135deg, #0284c7, #0369a1); font-size: 1em; padding: 12px;">✨ Invoquer (1x)</button>
+      <!-- PAGE INVOCATION -->
+      <section id="page-invocation" class="page">
+        <h2 class="summon-title">✨ Invocation</h2>
+        <p class="summon-subtitle">Tente d'obtenir de nouveaux exorcistes ou des doublons (+100 XP).</p>
+
+        <div id="summon-portal-card" class="summon-card">
+          <div class="summon-icon">🌀</div>
+          <h3 class="summon-card-title">Portail d'Exorcisme</h3>
+          <div class="summon-card-cost">
+            Coût : <span class="diamond-highlight">150 💎</span> par invocation
+          </div>
+          <button id="btn-summon" type="button" class="action-btn btn-summon">
+            ✨ Invoquer (1x)
+          </button>
         </div>
 
-        <div id="summon-result" style="margin-top: 15px; text-align: center; display: none; background: #141721; border: 1px solid #38bdf8; border-radius: 12px; padding: 12px;">
-          <p style="font-size: 0.75em; color: #38bdf8; margin: 0 0 8px 0; font-weight: bold;">Résultat de l'invocation :</p>
-          <img id="summon-reward-img" src="" alt="Personnage invoqué" style="width: 72px; height: 72px; border-radius: 12px; border: 2px solid #eab308; object-fit: cover; object-position: center top; margin-bottom: 6px; background: #000;">
-          <div id="summon-reward-name" style="font-size: 0.9em; font-weight: bold;">-</div>
+        <div id="summon-result" class="summon-result-box">
+          <p class="summon-result-label">RÉSULTAT D'INVOCATION</p>
+          <img id="summon-reward-img" class="summon-reward-img" alt="Personnage invoqué" />
+          <div id="summon-reward-name" class="summon-reward-name"></div>
         </div>
-      </div>
+      </section>
+    </main>
 
-    </div>
-
-    <!-- Navigation du Bas -->
-    <div class="bottom-nav">
-      <button class="nav-item active" id="nav-home">
-        <span class="icon">⚔️</span>
+    <!-- NAVIGATION EN BAS -->
+    <nav class="bottom-nav">
+      <button id="nav-home" type="button" class="nav-item active">
+        <span class="icon">🏠</span>
         <span>Accueil</span>
       </button>
-      <button class="nav-item" id="nav-collection">
-        <span class="icon">📜</span>
+      <button id="nav-collection" type="button" class="nav-item">
+        <span class="icon">📚</span>
         <span>Collection</span>
       </button>
-      <button class="nav-item" id="nav-invocation">
-        <span class="icon">🎴</span>
+      <button id="nav-invocation" type="button" class="nav-item">
+        <span class="icon">✨</span>
         <span>Invocation</span>
       </button>
-    </div>
-
+    </nav>
   </div>
 
   <script src="java.js"></script>
